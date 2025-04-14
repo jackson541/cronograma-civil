@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QListWidget,
-    QPushButton, QLabel, QMessageBox
+    QPushButton, QLabel, QMessageBox, QListWidgetItem
 )
+from PyQt5.QtCore import Qt
 
 from project.models import Client
 
@@ -21,6 +22,7 @@ class ListClientScreen(QWidget):
         layout.addWidget(self.label)
 
         self.client_list = QListWidget()
+        self.client_list.itemClicked.connect(self.view_edit_client)
         layout.addWidget(self.client_list)
 
         # Add button to open NewClientScreen
@@ -39,5 +41,11 @@ class ListClientScreen(QWidget):
         self.client_list.clear()
         clients = self.session.query(Client).all()
         for client in clients:
-            self.client_list.addItem(f"{client.name}")
+            item = QListWidgetItem(client.name)
+            item.setData(Qt.UserRole, client.id)
+            self.client_list.addItem(item)
+
+    def view_edit_client(self, item):
+        client_id = item.data(Qt.UserRole)
+        self.main_window.show_edit_client_screen(client_id)
 
