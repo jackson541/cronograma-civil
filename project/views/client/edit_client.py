@@ -13,7 +13,7 @@ class EditClientScreen(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        self.name_label = QLabel("Name:")
+        self.name_label = QLabel("Nome:")
         self.name_input = QLineEdit("")
 
         self.save_button = QPushButton("Salvar alteração")

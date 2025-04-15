@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton, QListWidgetItem
 from PyQt5.QtCore import Qt
 
 from project.models import Project
@@ -19,6 +19,7 @@ class ConcludedProjectsScreen(QWidget):
         layout.addWidget(self.label)
 
         self.project_list = QListWidget()
+        self.project_list.itemClicked.connect(self.view_project_details)
         layout.addWidget(self.project_list)
 
         self.back_button = QPushButton("Voltar")
@@ -32,5 +33,11 @@ class ConcludedProjectsScreen(QWidget):
         self.project_list.clear()
         projects = self.session.query(Project).filter(Project.concluded == True).all()
         for project in projects:
-            self.project_list.addItem(f"{project.name} (ID: {project.id})")
+            item = QListWidgetItem(project.name)
+            item.setData(Qt.UserRole, project.id)
+            self.project_list.addItem(item)
+
+    def view_project_details(self, item):
+        project_id = item.data(Qt.UserRole)
+        self.main_window.show_project_details_screen(project_id)
 

@@ -25,6 +25,10 @@ class ProjectDetailsScreen(QWidget):
         self.project_status_label = QLabel("Status: ")
         layout.addWidget(self.project_status_label)
 
+        self.add_service_button = QPushButton("Editar")
+        self.add_service_button.clicked.connect(self.go_to_edit_service)
+        layout.addWidget(self.add_service_button)
+
         layout.addWidget(QLabel("Services:"))
         self.services_list = QListWidget()
         self.services_list.itemClicked.connect(self.view_service_details)
@@ -65,4 +69,8 @@ class ProjectDetailsScreen(QWidget):
     def go_to_add_service(self):
         if self.project:
             self.main_window.show_create_service_screen(self.project.id)
+
+    def go_to_edit_service(self):
+        if self.project:
+            self.main_window.show_edit_project_screen(self.project.id)
 
