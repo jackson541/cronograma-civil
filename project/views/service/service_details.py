@@ -1,15 +1,12 @@
 from collections import defaultdict, deque
 import random
 
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QListWidget, QPushButton,
-    QListWidgetItem
-)
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsLineItem
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsLineItem, QLabel, QPushButton
 from PyQt5.QtGui import QPen, QColor
 from PyQt5.QtCore import Qt, QPointF
 
 from project.models import Service
+from project.utils.widgets import TaskRectItem
 
 
 class ServiceDetailsScreen(QWidget):
@@ -29,6 +26,10 @@ class ServiceDetailsScreen(QWidget):
 
         self.project_name_label = QLabel("Project: ")
         layout.addWidget(self.project_name_label)
+
+        self.edit_service_button = QPushButton("Editar")
+        self.edit_service_button.clicked.connect(self.go_to_edit_service)
+        layout.addWidget(self.edit_service_button)
 
         self.dependencies_label = QLabel()
         self.dependencies_label.setOpenExternalLinks(False)
@@ -171,9 +172,13 @@ class ServiceDetailsScreen(QWidget):
                 y = i * spacing_y
 
                 # Task rectangle
-                rect = QGraphicsRectItem(0, 0, 140, 60)
-                rect.setBrush(self.random_pastel_color())
-                rect.setPos(x, y)
+                rect = TaskRectItem(
+                    task, 
+                    (0, 0, 140, 60),
+                    self.random_pastel_color(),
+                    (x, y),
+                    self.main_window.show_edit_task_screen
+                )
                 self.scene.addItem(rect)
 
                 # Task name (inside the box)
@@ -238,3 +243,7 @@ class ServiceDetailsScreen(QWidget):
     def open_task_detail(self, item):
         task_id = item.data(Qt.UserRole)
         self.main_window.show_task_details_screen(task_id)
+
+    def go_to_edit_service(self):
+        if self.service:
+            self.main_window.show_edit_service_screen(self.service.id)

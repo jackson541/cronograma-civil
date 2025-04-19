@@ -10,9 +10,10 @@ from project.views.client.list_clients import ListClientScreen
 from project.views.client.edit_client import EditClientScreen
 from project.views.service.create_service import CreateServiceScreen
 from project.views.service.service_details import ServiceDetailsScreen
+from project.views.service.edit_service import EditServiceScreen
 from project.views.task.add_task import CreateTaskScreen
 from project.views.task.task_details import TaskDetailsScreen
-
+from project.views.task.edit_task import EditTaskScreen
 
 
 class MainWindow(QMainWindow):
@@ -37,6 +38,8 @@ class MainWindow(QMainWindow):
         self.task_details_screen = TaskDetailsScreen(self.session, self)
         self.edit_client_screen = EditClientScreen(self.session, self)
         self.edit_project_screen = EditProjectScreen(self.session, self)
+        self.edit_service_screen = EditServiceScreen(self.session, self)
+        self.edit_task_screen = EditTaskScreen(self.session, self)
 
         # Add screens to the stack
         self.stack.addWidget(self.project_screen)       # index 0
@@ -51,6 +54,8 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.task_details_screen)
         self.stack.addWidget(self.edit_client_screen)
         self.stack.addWidget(self.edit_project_screen)
+        self.stack.addWidget(self.edit_service_screen)
+        self.stack.addWidget(self.edit_task_screen)
 
 
         # Show the first screen
@@ -102,3 +107,11 @@ class MainWindow(QMainWindow):
     def show_edit_project_screen(self, project_id):
         self.edit_project_screen.load_project(project_id)
         self.stack.setCurrentWidget(self.edit_project_screen)
+
+    def show_edit_service_screen(self, service_id):
+        self.edit_service_screen.load_service(service_id)
+        self.stack.setCurrentWidget(self.edit_service_screen)
+
+    def show_edit_task_screen(self, task_id):
+        self.edit_task_screen.load_task(task_id)
+        self.stack.setCurrentWidget(self.edit_task_screen)
