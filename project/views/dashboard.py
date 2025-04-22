@@ -12,8 +12,8 @@ from project.views.service.create_service import CreateServiceScreen
 from project.views.service.service_details import ServiceDetailsScreen
 from project.views.service.edit_service import EditServiceScreen
 from project.views.task.add_task import CreateTaskScreen
-from project.views.task.task_details import TaskDetailsScreen
 from project.views.task.edit_task import EditTaskScreen
+from project.views.task.delete_task import DeleteTaskScreen
 
 
 class MainWindow(QMainWindow):
@@ -35,11 +35,11 @@ class MainWindow(QMainWindow):
         self.create_service_screen = CreateServiceScreen(self.session, self)
         self.service_details_screen = ServiceDetailsScreen(self.session, self)
         self.create_task_screen = CreateTaskScreen(self.session, self)
-        self.task_details_screen = TaskDetailsScreen(self.session, self)
         self.edit_client_screen = EditClientScreen(self.session, self)
         self.edit_project_screen = EditProjectScreen(self.session, self)
         self.edit_service_screen = EditServiceScreen(self.session, self)
         self.edit_task_screen = EditTaskScreen(self.session, self)
+        self.delete_task_screen = DeleteTaskScreen(self.session, self)
 
         # Add screens to the stack
         self.stack.addWidget(self.project_screen)       # index 0
@@ -51,11 +51,11 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.create_service_screen)
         self.stack.addWidget(self.service_details_screen)
         self.stack.addWidget(self.create_task_screen)
-        self.stack.addWidget(self.task_details_screen)
         self.stack.addWidget(self.edit_client_screen)
         self.stack.addWidget(self.edit_project_screen)
         self.stack.addWidget(self.edit_service_screen)
         self.stack.addWidget(self.edit_task_screen)
+        self.stack.addWidget(self.delete_task_screen)
 
 
         # Show the first screen
@@ -96,10 +96,6 @@ class MainWindow(QMainWindow):
         self.create_task_screen.load_service(service_id)
         self.stack.setCurrentWidget(self.create_task_screen)
 
-    def show_task_details_screen(self, task_id):
-        self.task_details_screen.load_task(task_id)
-        self.stack.setCurrentWidget(self.task_details_screen)
-
     def show_edit_client_screen(self, client_id):
         self.edit_client_screen.load_client(client_id)
         self.stack.setCurrentWidget(self.edit_client_screen)
@@ -115,3 +111,7 @@ class MainWindow(QMainWindow):
     def show_edit_task_screen(self, task_id):
         self.edit_task_screen.load_task(task_id)
         self.stack.setCurrentWidget(self.edit_task_screen)
+
+    def show_delete_task_screen(self, task_id):
+        self.delete_task_screen.load_task(task_id)
+        self.stack.setCurrentWidget(self.delete_task_screen)

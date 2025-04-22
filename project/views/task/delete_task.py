@@ -4,7 +4,7 @@ from project.models import Task
 from project.utils.funcs import compute_critical_path
 
 
-class EditTaskScreen(QWidget):
+class DeleteTaskScreen(QWidget):
     def __init__(self, session, main_window):
         super().__init__()
         self.session = session
@@ -14,27 +14,18 @@ class EditTaskScreen(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        self.name_label = QLabel("Nome:")
-        self.name_input = QLineEdit("")
-
-        self.days_label = QLabel("Dias para completar:")
-        self.days_input = QLineEdit("")
-
-        self.save_button = QPushButton("Salvar alteração")
-        self.save_button.clicked.connect(self.save_task)
+        self.name_label = QLabel()
+        self.question_label = QLabel("Tem certeza de que deseja excluir essa tarefa?")
 
         self.delete_button = QPushButton("Apagar tarefa")
         self.delete_button.setStyleSheet("background-color: red; color: white;")
-        self.delete_button.clicked.connect(self.go_to_delete_task)
+        self.delete_button.clicked.connect(self.delete_task)
 
         self.back_button = QPushButton("Voltar")
         self.back_button.clicked.connect(self.back_to_service_details)
 
         layout.addWidget(self.name_label)
-        layout.addWidget(self.name_input)
-        layout.addWidget(self.days_label)
-        layout.addWidget(self.days_input)
-        layout.addWidget(self.save_button)
+        layout.addWidget(self.question_label)
         layout.addWidget(self.delete_button)
         layout.addWidget(self.back_button)
 
@@ -48,28 +39,11 @@ class EditTaskScreen(QWidget):
             self.close()
             return
         
-        self.name_input.setText(self.task.name)
-        self.days_input.setText(str(self.task.days_to_complete))
+        self.name_label.setText(f"Nome: {self.task.name}")
 
-    def save_task(self):
-        name = self.name_input.text().strip()
-
-        if not name:
-            QMessageBox.warning(self, "Validation Error", "task name cannot be empty.")
-            return
-        
-        days = self.days_input.text().strip()
-
-        if not days:
-            QMessageBox.warning(self, "Validation Error", "task days cannot be empty.")
-            return
-        
-        if not days.isdigit() or int(days) <= 0:
-            QMessageBox.warning(self, "Validation Error", "Days to complete must be a positive number.")
-            return
-        
-        self.task.name = name
-        self.task.days_to_complete = int(days)
+    def delete_task(self):
+        self.session.delete(self.task)
+        self.session.commit()
 
         path, levels, dist = compute_critical_path(self.task.service.tasks)        
 
@@ -89,13 +63,9 @@ class EditTaskScreen(QWidget):
         }
         self.session.commit()
 
-        QMessageBox.information(self, "Salvo", "Tarefa atualizada.")
+        QMessageBox.information(self, "Removido", "Tarefa apagada.")
         self.back_to_service_details()
 
     def back_to_service_details(self):
         if self.task:
             self.main_window.show_service_details_screen(self.task.service.id)
-
-    def go_to_delete_task(self):
-        if self.task:
-            self.main_window.show_delete_task_screen(self.task.id)

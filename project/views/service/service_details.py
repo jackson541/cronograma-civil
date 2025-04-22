@@ -109,10 +109,6 @@ class ServiceDetailsScreen(QWidget):
         if self.service:
             self.main_window.show_create_task_screen(self.service.id)
 
-    def open_task_detail(self, item):
-        task_id = item.data(Qt.UserRole)
-        self.main_window.show_task_details_screen(task_id)
-
     def go_to_edit_service(self):
         if self.service:
             self.main_window.show_edit_service_screen(self.service.id)
