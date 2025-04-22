@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from project.models import Task, Service
+from project.utils.funcs import compute_critical_path
 
 
 class CreateTaskScreen(QWidget):
@@ -99,6 +100,15 @@ class CreateTaskScreen(QWidget):
                 new_task.dependencies.append(dep_task)
 
         self.session.add(new_task)
+        self.session.commit()
+
+        path, levels, dist = compute_critical_path(self.service.tasks)        
+
+        self.service.days_to_complete = dist
+        self.service.chart_data = {
+            "path": path,
+            "levels": levels,
+        }
         self.session.commit()
 
         QMessageBox.information(self, "Success", "Task added successfully!")

@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QMessageBox, QCheckBox
 
 from project.models import Task
+from project.utils.funcs import compute_critical_path
 
 
 class EditTaskScreen(QWidget):
@@ -64,6 +65,14 @@ class EditTaskScreen(QWidget):
         
         self.task.name = name
         self.task.days_to_complete = int(days)
+
+        path, levels, dist = compute_critical_path(self.task.service.tasks)        
+
+        self.task.service.days_to_complete = dist
+        self.task.service.chart_data = {
+            "path": path,
+            "levels": levels,
+        }
 
         self.session.commit()
         QMessageBox.information(self, "Salvo", "Tarefa atualizada.")

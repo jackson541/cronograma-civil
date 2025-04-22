@@ -44,8 +44,6 @@ class ServiceDetailsScreen(QWidget):
         layout.addWidget(self.dependents_label)
 
         self.max_days = QLabel()
-        self.max_days.setOpenExternalLinks(False)
-        self.max_days.linkActivated.connect(self.handle_link_click)
         layout.addWidget(self.max_days)
 
         # Graphical representation of tasks
@@ -73,6 +71,7 @@ class ServiceDetailsScreen(QWidget):
 
         self.service_name_label.setText(f"Service: {self.service.name}")
         self.project_name_label.setText(f"Project: {self.service.project.name}")
+        self.max_days.setText(f"Caminho crítico dias: {self.service.days_to_complete}")
 
         # Dependencies
         if self.service.dependencies:
@@ -97,73 +96,79 @@ class ServiceDetailsScreen(QWidget):
     def generate_graph(self):
         self.scene.clear()
         if not self.service.tasks:
-            self.max_days.setText("Sem tarefas")
             return
         
-        # --- Build dependency graph ---
-        graph = defaultdict(list)
-        in_degree = defaultdict(int)
-        out_degree = defaultdict(int)
-        tasks = {task.id: task for task in self.service.tasks}
+        # # --- Build dependency graph ---
+        # graph = defaultdict(list)
+        # in_degree = defaultdict(int)
+        # out_degree = defaultdict(int)
+        # tasks = {task.id: task for task in self.service.tasks}
 
-        for task in self.service.tasks:
-            for dep in task.dependencies:
-                graph[dep.id].append(task.id)
-                in_degree[task.id] += 1
-                out_degree[dep.id] += 1
+        # for task in self.service.tasks:
+        #     for dep in task.dependencies:
+        #         graph[dep.id].append(task.id)
+        #         in_degree[task.id] += 1
+        #         out_degree[dep.id] += 1
 
-        # --- Topological sort to get levels ---
-        levels = defaultdict(list)
-        topological_order = []
-        queue = deque()
+        # # --- Topological sort to get levels ---
+        # levels = defaultdict(list)
+        # topological_order = []
+        # queue = deque()
 
-        # Start with tasks with no dependencies
-        for task_id in tasks:
-            if in_degree[task_id] == 0:
-                queue.append((task_id, 0))
+        # # Start with tasks with no dependencies
+        # for task_id in tasks:
+        #     if in_degree[task_id] == 0:
+        #         queue.append((task_id, 0))
         
-        while queue:
-            task_id, level = queue.popleft()
-            levels[level].append(task_id)
-            topological_order.append(task_id)
-            for neighbor in graph[task_id]:
-                in_degree[neighbor] -= 1
-                if in_degree[neighbor] == 0:
-                    queue.append((neighbor, level + 1))
+        # while queue:
+        #     task_id, level = queue.popleft()
+        #     levels[level].append(task_id)
+        #     topological_order.append(task_id)
+        #     for neighbor in graph[task_id]:
+        #         in_degree[neighbor] -= 1
+        #         if in_degree[neighbor] == 0:
+        #             queue.append((neighbor, level + 1))
 
-        # --- Calculate max days ---
-        # Track max duration and previous task
-        distances = {task_id: tasks[task_id].days_to_complete for task_id in tasks}
-        previous = {task_id: None for task_id in tasks}
+        # # --- Calculate max days ---
+        # # Track max duration and previous task
+        # distances = {task_id: tasks[task_id].days_to_complete for task_id in tasks}
+        # previous = {task_id: None for task_id in tasks}
 
-        for task_id in topological_order:
-            for neighbor in graph[task_id]:
-                new_dist = distances[task_id] + tasks[neighbor].days_to_complete
-                if new_dist > distances[neighbor]:
-                    distances[neighbor] = new_dist
-                    previous[neighbor] = task_id
+        # for task_id in topological_order:
+        #     for neighbor in graph[task_id]:
+        #         new_dist = distances[task_id] + tasks[neighbor].days_to_complete
+        #         if new_dist > distances[neighbor]:
+        #             distances[neighbor] = new_dist
+        #             previous[neighbor] = task_id
 
-        # Find leaf with longest duration
-        leaf_nodes = [task.id for task in self.service.tasks if out_degree[task.id] == 0]
-        end_node = max(leaf_nodes, key=lambda tid: distances[tid])
-        self.max_days.setText(f"Caminho crítico dias: {distances[end_node]}")
+        # # Find leaf with longest duration
+        # leaf_nodes = [task.id for task in self.service.tasks if out_degree[task.id] == 0]
+        # end_node = max(leaf_nodes, key=lambda tid: distances[tid])
+        # # self.max_days.setText(f"Caminho crítico dias: {distances[end_node]}")
 
-        # Backtrack path
-        critical_path = []
-        current = end_node
-        while current is not None:
-            critical_path.insert(0, current)
-            current = previous[current]
+        # # Backtrack path
+        # critical_path = []
+        # current = end_node
+        # while current is not None:
+        #     critical_path.insert(0, current)
+        #     current = previous[current]
 
-        critical_edges = set()
-        for i in range(len(critical_path) - 1):
-            critical_edges.add((critical_path[i], critical_path[i + 1]))
+        # critical_edges = set()
+        # for i in range(len(critical_path) - 1):
+        #     critical_edges.add((critical_path[i], critical_path[i + 1]))
 
+        # from project.utils.funcs import compute_critical_path
+        # path, edges, levels, dist = compute_critical_path(self.service.tasks)
 
         # --- Place task nodes in screen ---
         task_items = {}
         spacing_x = 200
         spacing_y = 100
+
+        tasks = {task.id: task for task in self.service.tasks}
+
+        levels = self.service.chart_data['levels']
+        levels = {int(level): tasks for level, tasks in levels.items()}
 
         for level in sorted(levels.keys()):
             for i, task_id in enumerate(levels[level]):
@@ -196,6 +201,8 @@ class ServiceDetailsScreen(QWidget):
                 task_items[task_id] = rect
 
         # --- Draw dependency lines ---
+        path = self.service.chart_data['path']
+        edges = {(path[i], path[i+1]) for i in range(len(path) - 1)}
         for task in self.service.tasks:
             for dep in task.dependencies:
                 start_item = task_items.get(dep.id)
@@ -210,7 +217,7 @@ class ServiceDetailsScreen(QWidget):
                     line = QGraphicsLineItem(start_point.x(), start_point.y(),
                                             end_point.x(), end_point.y())
                     
-                    if (dep.id, task.id) in critical_edges:
+                    if (dep.id, task.id) in edges:
                         pen = QPen(Qt.red, 3)
                     else:
                         pen = QPen(Qt.black, 2)

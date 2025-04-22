@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Table, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Table, Boolean, JSON
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 
 Base = declarative_base()
@@ -31,6 +31,8 @@ class Service(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     project_id = Column(Integer, ForeignKey('projects.id'))
+    days_to_complete = Column(Integer, default=0)
+    chart_data = Column(JSON)
     project = relationship('Project', back_populates='services')
     tasks = relationship('Task', back_populates='service')
 
