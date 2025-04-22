@@ -5,12 +5,16 @@ from project.views.project.closed_projects import ConcludedProjectsScreen
 from project.views.project.add_project import AddProjectScreen
 from project.views.project.project_details import ProjectDetailsScreen
 from project.views.project.edit_project import EditProjectScreen
+
 from project.views.client.new_client import NewClientScreen
 from project.views.client.list_clients import ListClientScreen
 from project.views.client.edit_client import EditClientScreen
+
 from project.views.service.create_service import CreateServiceScreen
 from project.views.service.service_details import ServiceDetailsScreen
 from project.views.service.edit_service import EditServiceScreen
+from project.views.service.delete_service import DeleteServiceScreen
+
 from project.views.task.add_task import CreateTaskScreen
 from project.views.task.edit_task import EditTaskScreen
 from project.views.task.delete_task import DeleteTaskScreen
@@ -40,6 +44,7 @@ class MainWindow(QMainWindow):
         self.edit_service_screen = EditServiceScreen(self.session, self)
         self.edit_task_screen = EditTaskScreen(self.session, self)
         self.delete_task_screen = DeleteTaskScreen(self.session, self)
+        self.delete_service_screen = DeleteServiceScreen(self.session, self)
 
         # Add screens to the stack
         self.stack.addWidget(self.project_screen)       # index 0
@@ -56,6 +61,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.edit_service_screen)
         self.stack.addWidget(self.edit_task_screen)
         self.stack.addWidget(self.delete_task_screen)
+        self.stack.addWidget(self.delete_service_screen)
 
 
         # Show the first screen
@@ -115,3 +121,7 @@ class MainWindow(QMainWindow):
     def show_delete_task_screen(self, task_id):
         self.delete_task_screen.load_task(task_id)
         self.stack.setCurrentWidget(self.delete_task_screen)
+
+    def show_delete_service_screen(self, service_id):
+        self.delete_service_screen.load_service(service_id)
+        self.stack.setCurrentWidget(self.delete_service_screen)

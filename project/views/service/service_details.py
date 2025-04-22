@@ -50,8 +50,12 @@ class ServiceDetailsScreen(QWidget):
 
         self.add_task_button = QPushButton("Adicionar tarefa")
         self.add_task_button.clicked.connect(self.go_to_add_task)
-
         layout.addWidget(self.add_task_button)
+
+        self.delete_button = QPushButton("Apagar serviço")
+        self.delete_button.setStyleSheet("background-color: red; color: white;")
+        self.delete_button.clicked.connect(self.go_to_delete_service)
+        layout.addWidget(self.delete_button)
 
         self.back_button = QPushButton("Voltar")
         self.back_button.clicked.connect(self.back_to_project_details)
@@ -112,3 +116,7 @@ class ServiceDetailsScreen(QWidget):
     def go_to_edit_service(self):
         if self.service:
             self.main_window.show_edit_service_screen(self.service.id)
+
+    def go_to_delete_service(self):
+        if self.service:
+            self.main_window.show_delete_service_screen(self.service.id)
