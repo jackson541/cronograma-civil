@@ -80,7 +80,7 @@ class CreateTaskScreen(QWidget):
         temp_id = -999
         selected_deps = [item.data(Qt.UserRole) for item in self.dependencies_list.selectedItems()]
 
-        if self.would_create_cycle(temp_id, selected_deps, self.session):
+        if self.dependencies_list.count() > 0 and self.would_create_cycle(temp_id, selected_deps, self.session):
             QMessageBox.warning(self, "Ciclo detectado", "Não é possível criar depedências cíclicas.")
             return
 
@@ -109,6 +109,16 @@ class CreateTaskScreen(QWidget):
             "path": path,
             "levels": levels,
         }
+        self.session.commit()
+
+        path, levels, dist = compute_critical_path(self.service.project.services)        
+
+        self.service.project.days_to_complete = dist
+        self.service.project.chart_data = {
+            "path": path,
+            "levels": levels,
+        }
+
         self.session.commit()
 
         QMessageBox.information(self, "Success", "Task added successfully!")

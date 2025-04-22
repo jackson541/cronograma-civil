@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from project.models import Project, Service
+from project.utils.funcs import compute_critical_path
 
 
 class CreateServiceScreen(QWidget):
@@ -73,6 +74,15 @@ class CreateServiceScreen(QWidget):
                 new_service.dependencies.append(dep_service)
 
         self.session.add(new_service)
+        self.session.commit()
+
+        path, levels, dist = compute_critical_path(self.project.services)        
+
+        self.project.days_to_complete = dist
+        self.project.chart_data = {
+            "path": path,
+            "levels": levels,
+        }
         self.session.commit()
 
         QMessageBox.information(self, "Sucesso", "Serviço adicionado!")

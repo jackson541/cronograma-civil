@@ -1,12 +1,8 @@
-from collections import defaultdict, deque
-import random
-
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsLineItem, QLabel, QPushButton
-from PyQt5.QtGui import QPen, QColor
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, QLabel, QPushButton
+from PyQt5.QtCore import Qt
 
 from project.models import Service
-from project.utils.widgets import TaskRectItem
+from project.utils.funcs import generate_graph
 
 
 class ServiceDetailsScreen(QWidget):
@@ -91,148 +87,14 @@ class ServiceDetailsScreen(QWidget):
         else:
             self.dependents_label.setText("Sem dependentes")
 
-        self.generate_graph()
-
-    def generate_graph(self):
         self.scene.clear()
-        if not self.service.tasks:
-            return
-        
-        # # --- Build dependency graph ---
-        # graph = defaultdict(list)
-        # in_degree = defaultdict(int)
-        # out_degree = defaultdict(int)
-        # tasks = {task.id: task for task in self.service.tasks}
-
-        # for task in self.service.tasks:
-        #     for dep in task.dependencies:
-        #         graph[dep.id].append(task.id)
-        #         in_degree[task.id] += 1
-        #         out_degree[dep.id] += 1
-
-        # # --- Topological sort to get levels ---
-        # levels = defaultdict(list)
-        # topological_order = []
-        # queue = deque()
-
-        # # Start with tasks with no dependencies
-        # for task_id in tasks:
-        #     if in_degree[task_id] == 0:
-        #         queue.append((task_id, 0))
-        
-        # while queue:
-        #     task_id, level = queue.popleft()
-        #     levels[level].append(task_id)
-        #     topological_order.append(task_id)
-        #     for neighbor in graph[task_id]:
-        #         in_degree[neighbor] -= 1
-        #         if in_degree[neighbor] == 0:
-        #             queue.append((neighbor, level + 1))
-
-        # # --- Calculate max days ---
-        # # Track max duration and previous task
-        # distances = {task_id: tasks[task_id].days_to_complete for task_id in tasks}
-        # previous = {task_id: None for task_id in tasks}
-
-        # for task_id in topological_order:
-        #     for neighbor in graph[task_id]:
-        #         new_dist = distances[task_id] + tasks[neighbor].days_to_complete
-        #         if new_dist > distances[neighbor]:
-        #             distances[neighbor] = new_dist
-        #             previous[neighbor] = task_id
-
-        # # Find leaf with longest duration
-        # leaf_nodes = [task.id for task in self.service.tasks if out_degree[task.id] == 0]
-        # end_node = max(leaf_nodes, key=lambda tid: distances[tid])
-        # # self.max_days.setText(f"Caminho crítico dias: {distances[end_node]}")
-
-        # # Backtrack path
-        # critical_path = []
-        # current = end_node
-        # while current is not None:
-        #     critical_path.insert(0, current)
-        #     current = previous[current]
-
-        # critical_edges = set()
-        # for i in range(len(critical_path) - 1):
-        #     critical_edges.add((critical_path[i], critical_path[i + 1]))
-
-        # from project.utils.funcs import compute_critical_path
-        # path, edges, levels, dist = compute_critical_path(self.service.tasks)
-
-        # --- Place task nodes in screen ---
-        task_items = {}
-        spacing_x = 200
-        spacing_y = 100
-
-        tasks = {task.id: task for task in self.service.tasks}
-
-        levels = self.service.chart_data['levels']
-        levels = {int(level): tasks for level, tasks in levels.items()}
-
-        for level in sorted(levels.keys()):
-            for i, task_id in enumerate(levels[level]):
-                task = tasks[task_id]
-                x = level * spacing_x
-                y = i * spacing_y
-
-                # Task rectangle
-                rect = TaskRectItem(
-                    task, 
-                    (0, 0, 140, 60),
-                    self.random_pastel_color(),
-                    (x, y),
-                    self.main_window.show_edit_task_screen
-                )
-                self.scene.addItem(rect)
-
-                # Task name (inside the box)
-                label = QGraphicsTextItem(task.name)
-                label.setDefaultTextColor(Qt.black)
-                label.setParentItem(rect)
-                label.setPos(10, 10)
-
-                # Days to complete (below the box)
-                days_label = QGraphicsTextItem(f"{task.days_to_complete} dia(s)")
-                days_label.setDefaultTextColor(Qt.darkGray)
-                days_label.setPos(x + 10, y + 65)  # just below the rectangle
-                self.scene.addItem(days_label)
-
-                task_items[task_id] = rect
-
-        # --- Draw dependency lines ---
-        path = self.service.chart_data['path']
-        edges = {(path[i], path[i+1]) for i in range(len(path) - 1)}
-        for task in self.service.tasks:
-            for dep in task.dependencies:
-                start_item = task_items.get(dep.id)
-                end_item = task_items.get(task.id)
-                if start_item and end_item:
-                    start_rect = start_item.sceneBoundingRect()
-                    end_rect = end_item.sceneBoundingRect()
-
-                    start_point = QPointF(start_rect.right(), start_rect.center().y())
-                    end_point = QPointF(end_rect.left(), end_rect.center().y())
-
-                    line = QGraphicsLineItem(start_point.x(), start_point.y(),
-                                            end_point.x(), end_point.y())
-                    
-                    if (dep.id, task.id) in edges:
-                        pen = QPen(Qt.red, 3)
-                    else:
-                        pen = QPen(Qt.black, 2)
-
-                    line.setPen(pen)
-                    self.scene.addItem(line)
-
-
-    def random_pastel_color(self):
-        base = 200  # keep colors light
-        r = random.randint(base, 255)
-        g = random.randint(base, 255)
-        b = random.randint(base, 255)
-        return QColor(r, g, b)
-
+        if self.service.tasks:
+            generate_graph(
+                self.scene, 
+                self.service.tasks, 
+                self.main_window.show_edit_task_screen, 
+                self.service.chart_data
+            )
 
     def back_to_project_details(self):
         if self.service:

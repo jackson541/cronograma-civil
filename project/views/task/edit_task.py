@@ -73,8 +73,17 @@ class EditTaskScreen(QWidget):
             "path": path,
             "levels": levels,
         }
-
         self.session.commit()
+
+        path, levels, dist = compute_critical_path(self.task.service.project.services)        
+
+        self.task.service.project.days_to_complete = dist
+        self.task.service.project.chart_data = {
+            "path": path,
+            "levels": levels,
+        }
+        self.session.commit()
+
         QMessageBox.information(self, "Salvo", "Tarefa atualizada.")
         self.back_to_service_details()
 

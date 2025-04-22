@@ -1,11 +1,12 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QListWidget,
+    QWidget, QVBoxLayout, QLabel, QGraphicsView, QGraphicsScene,
     QPushButton, QListWidgetItem
 )
+
 from PyQt5.QtCore import Qt
 
-
 from project.models import Project
+from project.utils.funcs import generate_graph
 
 
 class ProjectDetailsScreen(QWidget):
@@ -25,14 +26,18 @@ class ProjectDetailsScreen(QWidget):
         self.project_status_label = QLabel("Status: ")
         layout.addWidget(self.project_status_label)
 
+        self.max_days = QLabel()
+        layout.addWidget(self.max_days)
+
         self.edit_project_button = QPushButton("Editar")
         self.edit_project_button.clicked.connect(self.go_to_edit_project)
         layout.addWidget(self.edit_project_button)
 
-        layout.addWidget(QLabel("Services:"))
-        self.services_list = QListWidget()
-        self.services_list.itemClicked.connect(self.view_service_details)
-        layout.addWidget(self.services_list)
+        # Graphical representation of tasks
+        self.scene = QGraphicsScene()
+        self.scene.setBackgroundBrush(Qt.white)
+        self.view = QGraphicsView(self.scene)
+        layout.addWidget(self.view)
 
         self.add_service_button = QPushButton("Adicionar serviço")
         self.add_service_button.clicked.connect(self.go_to_add_service)
@@ -56,15 +61,16 @@ class ProjectDetailsScreen(QWidget):
         status = "Concluded" if self.project.concluded else "In Progress"
         self.project_status_label.setText(f"Status: {status}")
 
-        self.services_list.clear()
-        for service in self.project.services:
-            item = QListWidgetItem(service.name)
-            item.setData(Qt.UserRole, service.id)
-            self.services_list.addItem(item)
+        self.max_days.setText(f"Caminho crítico dias: {self.project.days_to_complete}")
 
-    def view_service_details(self, item):
-        service_id = item.data(Qt.UserRole)
-        self.main_window.show_service_details_screen(service_id)
+        self.scene.clear()
+        if self.project.services:
+            generate_graph(
+                self.scene, 
+                self.project.services, 
+                self.main_window.show_service_details_screen, 
+                self.project.chart_data
+            )
 
     def go_to_add_service(self):
         if self.project:

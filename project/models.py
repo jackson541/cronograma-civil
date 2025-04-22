@@ -15,6 +15,8 @@ class Project(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     concluded = Column(Boolean, default=False)
+    days_to_complete = Column(Integer, default=0)
+    chart_data = Column(JSON)
     client_id = Column(Integer, ForeignKey('clients.id'))
     client = relationship('Client', back_populates='projects')
     services = relationship('Service', back_populates='project')

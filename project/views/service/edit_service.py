@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QMessageBox, QCheckBox
 
 from project.models import Service
+from project.utils.funcs import compute_critical_path
 
 
 class EditServiceScreen(QWidget):
@@ -47,8 +48,17 @@ class EditServiceScreen(QWidget):
             return
         
         self.service.name = name
-
         self.session.commit()
+
+        path, levels, dist = compute_critical_path(self.service.project.services)        
+
+        self.service.project.days_to_complete = dist
+        self.service.project.chart_data = {
+            "path": path,
+            "levels": levels,
+        }
+        self.session.commit()
+        
         QMessageBox.information(self, "Salvo", "Projeto atualizado.")
         self.back_to_service_details()
 
