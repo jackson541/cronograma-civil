@@ -14,21 +14,21 @@ class TemplateListScreen(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Project Templates")
+        self.setWindowTitle("Modelos de Projeto")
         layout = QVBoxLayout()
 
-        self.label = QLabel("Project Templates:")
+        self.label = QLabel("Modelos de Projeto:")
         layout.addWidget(self.label)
 
         self.template_list = QListWidget()
         self.template_list.itemClicked.connect(self.view_template_details)
         layout.addWidget(self.template_list)
 
-        self.add_template_button = QPushButton("Add Template")
+        self.add_template_button = QPushButton("Adicionar Modelo")
         self.add_template_button.clicked.connect(self.main_window.show_add_template_screen)
         layout.addWidget(self.add_template_button)
 
-        self.back_button = QPushButton("Back")
+        self.back_button = QPushButton("Voltar")
         self.back_button.clicked.connect(self.main_window.show_project_screen)
         layout.addWidget(self.back_button)
 

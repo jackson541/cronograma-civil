@@ -36,7 +36,7 @@ class NotConcludedProjectsScreen(QWidget):
         self.list_clients_button.clicked.connect(self.main_window.show_add_project_screen)
         layout.addWidget(self.list_clients_button)
 
-        self.templates_button = QPushButton("Project Templates")
+        self.templates_button = QPushButton("Modelos de projeto")
         self.templates_button.clicked.connect(self.main_window.show_template_list_screen)
         layout.addWidget(self.templates_button)
 

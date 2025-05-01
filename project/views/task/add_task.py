@@ -19,30 +19,30 @@ class CreateTaskScreen(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Add New Task")
+        self.setWindowTitle("Adicionar Nova Tarefa")
         layout = QVBoxLayout()
 
-        self.service_label = QLabel("Service: ")
+        self.service_label = QLabel("Serviço: ")
         layout.addWidget(self.service_label)
 
         self.task_name_input = QLineEdit()
-        self.task_name_input.setPlaceholderText("Enter task name")
+        self.task_name_input.setPlaceholderText("Digite o nome da tarefa")
         layout.addWidget(self.task_name_input)
 
         self.days_input = QLineEdit()
-        self.days_input.setPlaceholderText("Days to complete")
+        self.days_input.setPlaceholderText("Dias para completar")
         layout.addWidget(self.days_input)
 
-        layout.addWidget(QLabel("Depends on (select tasks):"))
+        layout.addWidget(QLabel("Depende de (selecione as tarefas):"))
         self.dependencies_list = QListWidget()
         self.dependencies_list.setSelectionMode(QListWidget.MultiSelection)
         layout.addWidget(self.dependencies_list)
 
-        self.save_button = QPushButton("Save Task")
+        self.save_button = QPushButton("Salvar Tarefa")
         self.save_button.clicked.connect(self.save_task)
         layout.addWidget(self.save_button)
 
-        self.back_button = QPushButton("← Back to Service Details")
+        self.back_button = QPushButton("← Voltar para Detalhes do Serviço")
         self.back_button.clicked.connect(self.back_to_service_details)
         layout.addWidget(self.back_button)
 
@@ -51,7 +51,7 @@ class CreateTaskScreen(QWidget):
     def load_service(self, service_id):
         self.service = self.session.query(Service).get(service_id)
         if self.service:
-            self.service_label.setText(f"Service: {self.service.name}")
+            self.service_label.setText(f"Serviço: {self.service.name}")
             self.task_name_input.clear()
             self.days_input.clear()
             self.populate_dependencies()
@@ -69,11 +69,11 @@ class CreateTaskScreen(QWidget):
         days_text = self.days_input.text().strip()
 
         if not name:
-            QMessageBox.warning(self, "Validation Error", "Task name cannot be empty.")
+            QMessageBox.warning(self, "Erro de Validação", "O nome da tarefa não pode estar vazio.")
             return
         
         if not days_text.isdigit() or int(days_text) <= 0:
-            QMessageBox.warning(self, "Validation Error", "Days to complete must be a positive number.")
+            QMessageBox.warning(self, "Erro de Validação", "Os dias para completar devem ser um número positivo.")
             return
 
         days_to_complete = int(days_text)
@@ -120,7 +120,7 @@ class CreateTaskScreen(QWidget):
 
         self.session.commit()
 
-        QMessageBox.information(self, "Success", "Task added successfully!")
+        QMessageBox.information(self, "Sucesso", "Tarefa adicionada com sucesso!")
         self.main_window.show_service_details_screen(self.service.id)
 
     def back_to_service_details(self):

@@ -50,7 +50,7 @@ class AddProjectScreen(QWidget):
         client_id = self.client_dropdown.currentData()
 
         if not name:
-            QMessageBox.warning(self, "Validation Error", "Project name cannot be empty.")
+            QMessageBox.warning(self, "Erro de Validação", "O nome do projeto não pode estar vazio.")
             return
 
         project = Project(name=name, client_id=client_id)

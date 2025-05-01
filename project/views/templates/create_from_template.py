@@ -15,25 +15,25 @@ class CreateFromTemplateScreen(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Create Project from Template")
+        self.setWindowTitle("Criar Projeto a partir do Modelo")
         layout = QVBoxLayout()
 
         # Project Name
-        layout.addWidget(QLabel("Project Name:"))
+        layout.addWidget(QLabel("Nome do Projeto:"))
         self.name_input = QLineEdit()
         layout.addWidget(self.name_input)
 
         # Client Dropdown
-        layout.addWidget(QLabel("Client:"))
+        layout.addWidget(QLabel("Cliente:"))
         self.client_dropdown = QComboBox()
         layout.addWidget(self.client_dropdown)
 
         # Buttons
-        self.save_button = QPushButton("Create Project")
+        self.save_button = QPushButton("Criar Projeto")
         self.save_button.clicked.connect(self.create_project)
         layout.addWidget(self.save_button)
 
-        self.back_button = QPushButton("Back")
+        self.back_button = QPushButton("Voltar")
         self.back_button.clicked.connect(self.back_to_template_details)
         layout.addWidget(self.back_button)
 
@@ -42,7 +42,7 @@ class CreateFromTemplateScreen(QWidget):
     def load_template(self, template_id):
         self.template = self.session.query(ProjectTemplate).get(template_id)
         if not self.template:
-            QMessageBox.critical(self, "Error", "Template not found.")
+            QMessageBox.critical(self, "Erro", "Modelo não encontrado.")
             self.close()
             return
         self.load_clients()
@@ -61,7 +61,7 @@ class CreateFromTemplateScreen(QWidget):
         client_id = self.client_dropdown.currentData()
 
         if not name:
-            QMessageBox.warning(self, "Validation Error", "Project name cannot be empty.")
+            QMessageBox.warning(self, "Erro de Validação", "O nome do projeto não pode estar vazio.")
             return
 
         # Create the project
@@ -142,7 +142,7 @@ class CreateFromTemplateScreen(QWidget):
         project.days_to_complete = dist
         self.session.commit()
 
-        QMessageBox.information(self, "Success", "Project created successfully!")
+        QMessageBox.information(self, "Sucesso", "Projeto criado com sucesso!")
         self.main_window.show_project_details_screen(project.id)
 
     def back_to_template_details(self):

@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
     def __init__(self, session):
         super().__init__()
         self.session = session
-        self.setWindowTitle("Project Manager")
+        self.setWindowTitle("Gerenciador de Projetos")
 
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)

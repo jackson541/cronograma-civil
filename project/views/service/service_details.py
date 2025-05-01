@@ -14,13 +14,13 @@ class ServiceDetailsScreen(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Service Details")
+        self.setWindowTitle("Detalhes do Serviço")
         layout = QVBoxLayout()
 
-        self.service_name_label = QLabel("Service: ")
+        self.service_name_label = QLabel("Serviço: ")
         layout.addWidget(self.service_name_label)
 
-        self.project_name_label = QLabel("Project: ")
+        self.project_name_label = QLabel("Projeto: ")
         layout.addWidget(self.project_name_label)
 
         self.edit_service_button = QPushButton("Editar")
@@ -30,13 +30,13 @@ class ServiceDetailsScreen(QWidget):
         self.dependencies_label = QLabel()
         self.dependencies_label.setOpenExternalLinks(False)
         self.dependencies_label.linkActivated.connect(self.handle_link_click)
-        layout.addWidget(QLabel("Depends on:"))
+        layout.addWidget(QLabel("Depende de:"))
         layout.addWidget(self.dependencies_label)
 
         self.dependents_label = QLabel()
         self.dependents_label.setOpenExternalLinks(False)
         self.dependents_label.linkActivated.connect(self.handle_link_click)
-        layout.addWidget(QLabel("Dependents:"))
+        layout.addWidget(QLabel("Dependentes:"))
         layout.addWidget(self.dependents_label)
 
         self.max_days = QLabel()
@@ -66,14 +66,14 @@ class ServiceDetailsScreen(QWidget):
     def load_service(self, service_id):
         self.service = self.session.query(Service).get(service_id)
         if not self.service:
-            self.service_name_label.setText("Service not found.")
+            self.service_name_label.setText("Serviço não encontrado.")
             return
 
-        self.service_name_label.setText(f"Service: {self.service.name}")
+        self.service_name_label.setText(f"Serviço: {self.service.name}")
         if self.service.project:
-            self.project_name_label.setText(f"Project: {self.service.project.name}")
+            self.project_name_label.setText(f"Projeto: {self.service.project.name}")
         else:
-            self.project_name_label.setText(f"Project: {self.service.template.name}")
+            self.project_name_label.setText(f"Projeto: {self.service.template.name}")
         self.max_days.setText(f"Caminho crítico dias: {self.service.days_to_complete}")
 
         # Dependencies

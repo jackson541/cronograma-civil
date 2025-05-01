@@ -20,7 +20,7 @@ class ProjectDetailsScreen(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        self.project_name_label = QLabel("Project Name: ")
+        self.project_name_label = QLabel("Nome do Projeto: ")
         layout.addWidget(self.project_name_label)
 
         self.project_status_label = QLabel("Status: ")
@@ -52,13 +52,13 @@ class ProjectDetailsScreen(QWidget):
     def load_project(self, project_id):
         self.project = self.session.query(Project).get(project_id)
         if not self.project:
-            self.project_name_label.setText("Project not found.")
+            self.project_name_label.setText("Projeto não encontrado.")
             return
         
         self.setWindowTitle(self.project.name)
 
-        self.project_name_label.setText(f"Project Name: {self.project.name}")
-        status = "Concluded" if self.project.concluded else "In Progress"
+        self.project_name_label.setText(f"Nome do Projeto: {self.project.name}")
+        status = "Concluído" if self.project.concluded else "Em Andamento"
         self.project_status_label.setText(f"Status: {status}")
 
         self.max_days.setText(f"Caminho crítico dias: {self.project.days_to_complete}")

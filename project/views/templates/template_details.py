@@ -19,7 +19,7 @@ class TemplateDetailsScreen(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        self.template_name_label = QLabel("Template Name: ")
+        self.template_name_label = QLabel("Nome do Modelo: ")
         layout.addWidget(self.template_name_label)
 
         self.max_days = QLabel()
@@ -31,15 +31,15 @@ class TemplateDetailsScreen(QWidget):
         self.view = QGraphicsView(self.scene)
         layout.addWidget(self.view)
 
-        self.add_service_button = QPushButton("Add Service")
+        self.add_service_button = QPushButton("Adicionar Serviço")
         self.add_service_button.clicked.connect(self.go_to_add_service)
         layout.addWidget(self.add_service_button)
 
-        self.create_project_button = QPushButton("Create Project from Template")
+        self.create_project_button = QPushButton("Criar Projeto a partir do Modelo")
         self.create_project_button.clicked.connect(self.create_project_from_template)
         layout.addWidget(self.create_project_button)
 
-        self.back_button = QPushButton("Back")
+        self.back_button = QPushButton("Voltar")
         self.back_button.clicked.connect(self.main_window.show_template_list_screen)
         layout.addWidget(self.back_button)
 
@@ -48,13 +48,13 @@ class TemplateDetailsScreen(QWidget):
     def load_template(self, template_id):
         self.template = self.session.query(ProjectTemplate).get(template_id)
         if not self.template:
-            self.template_name_label.setText("Template not found.")
+            self.template_name_label.setText("Modelo não encontrado.")
             return
         
         self.setWindowTitle(self.template.name)
 
-        self.template_name_label.setText(f"Template Name: {self.template.name}")
-        self.max_days.setText(f"Critical path days: {self.template.days_to_complete}")
+        self.template_name_label.setText(f"Nome do Modelo: {self.template.name}")
+        self.max_days.setText(f"Dias do caminho crítico: {self.template.days_to_complete}")
 
         self.scene.clear()
         if self.template.services:

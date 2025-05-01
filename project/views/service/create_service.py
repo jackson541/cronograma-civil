@@ -17,7 +17,7 @@ class CreateServiceScreen(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Add New Service")
+        self.setWindowTitle("Adicionar Novo Serviço")
         layout = QVBoxLayout()
 
         self.project_label = QLabel("Projeto: ")
@@ -60,7 +60,7 @@ class CreateServiceScreen(QWidget):
     def save_service(self):
         name = self.service_name_input.text().strip()
         if not name:
-            QMessageBox.warning(self, "Validation Error", "Service name cannot be empty.")
+            QMessageBox.warning(self, "Erro de Validação", "O nome do serviço não pode estar vazio.")
             return
 
         new_service = Service(name=name, project_id=self.project.id)

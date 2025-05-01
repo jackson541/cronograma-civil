@@ -16,26 +16,26 @@ class AddTemplateServiceScreen(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Add Service to Template")
+        self.setWindowTitle("Adicionar Serviço ao Modelo")
         layout = QVBoxLayout()
 
-        self.template_label = QLabel("Template: ")
+        self.template_label = QLabel("Modelo: ")
         layout.addWidget(self.template_label)
 
         self.service_name_input = QLineEdit()
-        self.service_name_input.setPlaceholderText("Service name")
+        self.service_name_input.setPlaceholderText("Nome do serviço")
         layout.addWidget(self.service_name_input)
 
-        layout.addWidget(QLabel("Dependencies (select services):"))
+        layout.addWidget(QLabel("Dependências (selecione os serviços):"))
         self.dependencies_list = QListWidget()
         self.dependencies_list.setSelectionMode(QListWidget.MultiSelection)
         layout.addWidget(self.dependencies_list)
 
-        self.save_button = QPushButton("Add Service")
+        self.save_button = QPushButton("Adicionar Serviço")
         self.save_button.clicked.connect(self.save_service)
         layout.addWidget(self.save_button)
 
-        self.back_button = QPushButton("Back")
+        self.back_button = QPushButton("Voltar")
         self.back_button.clicked.connect(self.back_to_template_details)
         layout.addWidget(self.back_button)
 
@@ -44,7 +44,7 @@ class AddTemplateServiceScreen(QWidget):
     def load_template(self, template_id):
         self.template = self.session.query(ProjectTemplate).get(template_id)
         if self.template:
-            self.template_label.setText(f"Template: {self.template.name}")
+            self.template_label.setText(f"Modelo: {self.template.name}")
             self.service_name_input.clear()
             self.populate_dependencies()
 
@@ -60,7 +60,7 @@ class AddTemplateServiceScreen(QWidget):
         name = self.service_name_input.text().strip()
 
         if not name:
-            QMessageBox.warning(self, "Validation Error", "Service name cannot be empty.")
+            QMessageBox.warning(self, "Erro de Validação", "O nome do serviço não pode estar vazio.")
             return
 
         new_service = Service(
@@ -88,7 +88,7 @@ class AddTemplateServiceScreen(QWidget):
         }
         self.session.commit()
 
-        QMessageBox.information(self, "Success", "Service added successfully!")
+        QMessageBox.information(self, "Sucesso", "Serviço adicionado com sucesso!")
         self.main_window.show_template_details_screen(self.template.id)
 
     def back_to_template_details(self):
