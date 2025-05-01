@@ -47,13 +47,20 @@ class DeleteServiceScreen(QWidget):
             self.session.delete(task)
         self.session.commit()
 
-        path, levels, dist = compute_critical_path(self.service.project.services)        
-
-        self.service.project.days_to_complete = dist
-        self.service.project.chart_data = {
-            "path": path,
-            "levels": levels,
-        }
+        if self.service.project:
+            path, levels, dist = compute_critical_path(self.service.project.services)
+            self.service.project.days_to_complete = dist
+            self.service.project.chart_data = {
+                "path": path,
+                "levels": levels,
+            }
+        else:
+            path, levels, dist = compute_critical_path(self.service.template.services)
+            self.service.template.days_to_complete = dist
+            self.service.template.chart_data = {
+                "path": path,
+                "levels": levels,
+            }
         self.session.commit()
         
         QMessageBox.information(self, "Removido", "Serviço apagado.")
@@ -61,5 +68,8 @@ class DeleteServiceScreen(QWidget):
 
     def back_to_project_details(self):
         if self.service:
-            self.main_window.show_project_details_screen(self.service.project.id)
+            if self.service.project:
+                self.main_window.show_project_details_screen(self.service.project.id)
+            else:
+                self.main_window.show_template_details_screen(self.service.template.id)
 

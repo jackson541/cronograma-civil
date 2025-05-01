@@ -70,7 +70,10 @@ class ServiceDetailsScreen(QWidget):
             return
 
         self.service_name_label.setText(f"Service: {self.service.name}")
-        self.project_name_label.setText(f"Project: {self.service.project.name}")
+        if self.service.project:
+            self.project_name_label.setText(f"Project: {self.service.project.name}")
+        else:
+            self.project_name_label.setText(f"Project: {self.service.template.name}")
         self.max_days.setText(f"Caminho crítico dias: {self.service.days_to_complete}")
 
         # Dependencies
@@ -102,7 +105,10 @@ class ServiceDetailsScreen(QWidget):
 
     def back_to_project_details(self):
         if self.service:
-            self.main_window.show_project_details_screen(self.service.project_id)
+            if self.service.project:
+                self.main_window.show_project_details_screen(self.service.project_id)
+            else:
+                self.main_window.show_template_details_screen(self.service.template_id)
 
     def handle_link_click(self, link):
         if link.startswith("service:"):

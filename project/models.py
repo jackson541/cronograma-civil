@@ -20,6 +20,8 @@ class Project(Base):
     client_id = Column(Integer, ForeignKey('clients.id'))
     client = relationship('Client', back_populates='projects')
     services = relationship('Service', back_populates='project')
+    template_id = Column(Integer, ForeignKey('project_templates.id'), nullable=True)
+    template = relationship('ProjectTemplate', back_populates='projects')
 
 # Association table for service dependencies
 service_dependencies = Table(
@@ -32,10 +34,12 @@ class Service(Base):
     __tablename__ = 'services'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    project_id = Column(Integer, ForeignKey('projects.id'))
+    project_id = Column(Integer, ForeignKey('projects.id'), nullable=True)
+    template_id = Column(Integer, ForeignKey('project_templates.id'), nullable=True)
     days_to_complete = Column(Integer, default=0)
     chart_data = Column(JSON)
     project = relationship('Project', back_populates='services')
+    template = relationship('ProjectTemplate', back_populates='services')
     tasks = relationship('Task', back_populates='service')
 
     # Self-referencing many-to-many
@@ -72,6 +76,15 @@ class Task(Base):
         secondaryjoin=id==task_dependencies.c.depends_on_id,
         backref='dependents'  # Tasks that depend on this task
     )
+
+class ProjectTemplate(Base):
+    __tablename__ = 'project_templates'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    days_to_complete = Column(Integer, default=0)
+    chart_data = Column(JSON)
+    services = relationship('Service', back_populates='template')
+    projects = relationship('Project', back_populates='template')
 
 
 engine = create_engine('sqlite:///project.db')

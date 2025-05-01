@@ -49,7 +49,12 @@ class EditServiceScreen(QWidget):
 
     def populate_dependencies(self):
         self.dependencies_list.clear()
-        for service in self.service.project.services:
+        if self.service.project:
+            services = self.service.project.services
+        else:
+            services = self.service.template.services
+
+        for service in services:
             if service.id != self.service.id:  # Don't show the current service
                 item = QListWidgetItem(service.name)
                 item.setData(Qt.UserRole, service.id)
@@ -84,13 +89,20 @@ class EditServiceScreen(QWidget):
 
         self.session.commit()
 
-        path, levels, dist = compute_critical_path(self.service.project.services)        
-
-        self.service.project.days_to_complete = dist
-        self.service.project.chart_data = {
-            "path": path,
-            "levels": levels,
-        }
+        if self.service.project:
+            path, levels, dist = compute_critical_path(self.service.project.services)        
+            self.service.project.days_to_complete = dist
+            self.service.project.chart_data = {
+                "path": path,
+                "levels": levels,
+            }
+        else:
+            path, levels, dist = compute_critical_path(self.service.template.services)
+            self.service.template.days_to_complete = dist
+            self.service.template.chart_data = {
+                "path": path,
+                "levels": levels,
+            }
         self.session.commit()
         
         QMessageBox.information(self, "Salvo", "Serviço atualizado.")
@@ -101,7 +113,11 @@ class EditServiceScreen(QWidget):
         graph = defaultdict(list)
         
         # Build complete graph including all services and their dependencies
-        all_services = self.service.project.services
+        if self.service.project:
+            all_services = self.service.project.services
+        else:
+            all_services = self.service.template.services
+
         for service in all_services:
             if service.id != service_id:  # Skip the current service being edited
                 for dep in service.dependencies:
