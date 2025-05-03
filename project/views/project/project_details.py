@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QGraphicsView, QGraphicsScene,
-    QPushButton, QListWidgetItem
+    QPushButton, QListWidgetItem, QMessageBox
 )
 
 from PyQt5.QtCore import Qt
@@ -35,6 +35,11 @@ class ProjectDetailsScreen(QWidget):
         self.edit_project_button = QPushButton("Editar")
         self.edit_project_button.clicked.connect(self.go_to_edit_project)
         layout.addWidget(self.edit_project_button)
+        
+        self.delete_project_button = QPushButton("Excluir Projeto")
+        self.delete_project_button.setStyleSheet("background-color: red; color: white;")
+        self.delete_project_button.clicked.connect(self.delete_project)
+        layout.addWidget(self.delete_project_button)
 
         # Graphical representation of tasks
         self.scene = QGraphicsScene()
@@ -83,4 +88,11 @@ class ProjectDetailsScreen(QWidget):
     def go_to_edit_project(self):
         if self.project:
             self.main_window.show_edit_project_screen(self.project.id)
+            
+    def delete_project(self):
+        if not self.project:
+            return
+            
+        # Go directly to delete screen without confirmation
+        self.main_window.show_delete_project_screen(self.project.id)
 

@@ -5,6 +5,7 @@ from project.views.project.closed_projects import ConcludedProjectsScreen
 from project.views.project.add_project import AddProjectScreen
 from project.views.project.project_details import ProjectDetailsScreen
 from project.views.project.edit_project import EditProjectScreen
+from project.views.project.delete_project import DeleteProjectScreen
 
 from project.views.client.new_client import NewClientScreen
 from project.views.client.list_clients import ListClientScreen
@@ -24,7 +25,7 @@ from project.views.templates.add_template import AddTemplateScreen
 from project.views.templates.template_details import TemplateDetailsScreen
 from project.views.templates.create_from_template import CreateFromTemplateScreen
 from project.views.templates.add_template_service import AddTemplateServiceScreen
-
+from project.views.templates.delete_template import DeleteTemplateScreen
 
 
 class MainWindow(QMainWindow):
@@ -52,6 +53,7 @@ class MainWindow(QMainWindow):
         self.edit_task_screen = EditTaskScreen(self.session, self)
         self.delete_task_screen = DeleteTaskScreen(self.session, self)
         self.delete_service_screen = DeleteServiceScreen(self.session, self)
+        self.delete_project_screen = DeleteProjectScreen(self.session, self)
         
         # Template screens
         self.template_list_screen = TemplateListScreen(self.session, self)
@@ -59,6 +61,7 @@ class MainWindow(QMainWindow):
         self.template_details_screen = TemplateDetailsScreen(self.session, self)
         self.create_from_template_screen = CreateFromTemplateScreen(self.session, self)
         self.add_template_service_screen = AddTemplateServiceScreen(self.session, self)
+        self.delete_template_screen = DeleteTemplateScreen(self.session, self)
 
         # Add screens to the stack
         self.stack.addWidget(self.project_screen)       # index 0
@@ -76,11 +79,13 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.edit_task_screen)
         self.stack.addWidget(self.delete_task_screen)
         self.stack.addWidget(self.delete_service_screen)
+        self.stack.addWidget(self.delete_project_screen)
         self.stack.addWidget(self.template_list_screen)
         self.stack.addWidget(self.add_template_screen)
         self.stack.addWidget(self.template_details_screen)
         self.stack.addWidget(self.create_from_template_screen)
         self.stack.addWidget(self.add_template_service_screen)
+        self.stack.addWidget(self.delete_template_screen)
 
         # Show the first screen
         self.show_project_screen()
@@ -109,6 +114,10 @@ class MainWindow(QMainWindow):
     def show_project_details_screen(self, project_id):
         self.project_details_screen.load_project(project_id)
         self.stack.setCurrentWidget(self.project_details_screen)
+        
+    def show_delete_project_screen(self, project_id):
+        self.delete_project_screen.load_project(project_id)
+        self.stack.setCurrentWidget(self.delete_project_screen)
 
     def show_create_service_screen(self, project_id):
         self.create_service_screen.load_project(project_id)
@@ -145,6 +154,10 @@ class MainWindow(QMainWindow):
     def show_delete_service_screen(self, service_id):
         self.delete_service_screen.load_service(service_id)
         self.stack.setCurrentWidget(self.delete_service_screen)
+        
+    def show_delete_template_screen(self, template_id):
+        self.delete_template_screen.load_template(template_id)
+        self.stack.setCurrentWidget(self.delete_template_screen)
 
     def show_template_list_screen(self):
         self.template_list_screen.load_templates()

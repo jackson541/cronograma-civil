@@ -39,6 +39,11 @@ class TemplateDetailsScreen(QWidget):
         self.create_project_button.clicked.connect(self.create_project_from_template)
         layout.addWidget(self.create_project_button)
 
+        self.delete_button = QPushButton("Excluir Modelo")
+        self.delete_button.setStyleSheet("background-color: red; color: white;")
+        self.delete_button.clicked.connect(self.delete_template)
+        layout.addWidget(self.delete_button)
+
         self.back_button = QPushButton("Voltar")
         self.back_button.clicked.connect(self.main_window.show_template_list_screen)
         layout.addWidget(self.back_button)
@@ -73,4 +78,9 @@ class TemplateDetailsScreen(QWidget):
         if not self.template:
             return
             
-        self.main_window.show_create_project_from_template_screen(self.template.id) 
+        self.main_window.show_create_project_from_template_screen(self.template.id)
+        
+    def delete_template(self):
+        if not self.template:
+            return
+        self.main_window.show_delete_template_screen(self.template.id) 
