@@ -123,24 +123,27 @@ class CreateFromTemplateScreen(QWidget):
         self.session.commit()
 
         # calculate critical path for services
-        for service in project.services:
-            path, levels, dist = compute_critical_path(service.tasks)
-            service.chart_data = {
+        if project.services:
+            for service in project.services:
+                if service.tasks:
+                    path, levels, dist = compute_critical_path(service.tasks)
+                    service.chart_data = {
+                        "path": path,
+                        "levels": levels,
+                    }
+                    service.days_to_complete = dist
+        
+            self.session.commit()
+
+        # calculate critical path for project
+        if project.services:
+            path, levels, dist = compute_critical_path(project.services)
+            project.chart_data = {
                 "path": path,
                 "levels": levels,
             }
-            service.days_to_complete = dist
-        
-        self.session.commit()
-
-        # calculate critical path for project
-        path, levels, dist = compute_critical_path(project.services)
-        project.chart_data = {
-            "path": path,
-            "levels": levels,
-        }
-        project.days_to_complete = dist
-        self.session.commit()
+            project.days_to_complete = dist
+            self.session.commit()
 
         QMessageBox.information(self, "Sucesso", "Projeto criado com sucesso!")
         self.main_window.show_project_details_screen(project.id)

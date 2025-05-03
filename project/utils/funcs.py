@@ -46,7 +46,6 @@ def compute_critical_path(tasks_list):
 
     # Get critical path
     leaves = [tid for tid in tasks if out_deg[tid] == 0]
-    print('leaves', leaves)
     end = max(leaves, key=lambda tid: dist[tid])
 
     path = []
