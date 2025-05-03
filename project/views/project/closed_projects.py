@@ -1,7 +1,10 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton, QListWidgetItem
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton, QListWidgetItem,
+    QComboBox, QHBoxLayout
+)
 from PyQt5.QtCore import Qt
 
-from project.models import Project
+from project.models import Project, Client
 
 
 class ConcludedProjectsScreen(QWidget):
@@ -9,6 +12,7 @@ class ConcludedProjectsScreen(QWidget):
         super().__init__()
         self.session = session
         self.main_window = main_window
+        self.selected_client_id = None
         self.init_ui()
 
     def init_ui(self):
@@ -17,6 +21,14 @@ class ConcludedProjectsScreen(QWidget):
 
         self.label = QLabel("Projetos concluidos:")
         layout.addWidget(self.label)
+        
+        # Add client filter
+        filter_layout = QHBoxLayout()
+        filter_layout.addWidget(QLabel("Filtrar por cliente:"))
+        self.client_filter = QComboBox()
+        self.client_filter.currentIndexChanged.connect(self.on_client_filter_changed)
+        filter_layout.addWidget(self.client_filter)
+        layout.addLayout(filter_layout)
 
         self.project_list = QListWidget()
         self.project_list.itemClicked.connect(self.view_project_details)
@@ -27,11 +39,27 @@ class ConcludedProjectsScreen(QWidget):
         layout.addWidget(self.back_button)
 
         self.setLayout(layout)
+        
+    def load_clients(self):
+        self.client_filter.clear()
+        self.client_filter.addItem("Todos os clientes", None)
+        clients = self.session.query(Client).all()
+        for client in clients:
+            self.client_filter.addItem(client.name, client.id)
+            
+    def on_client_filter_changed(self, index):
+        self.selected_client_id = self.client_filter.itemData(index)
         self.load_projects()
 
     def load_projects(self):
         self.project_list.clear()
-        projects = self.session.query(Project).filter(Project.concluded == True).all()
+        query = self.session.query(Project).filter(Project.concluded == True)
+        
+        # Apply client filter if selected
+        if self.selected_client_id is not None:
+            query = query.filter(Project.client_id == self.selected_client_id)
+            
+        projects = query.all()
         for project in projects:
             item = QListWidgetItem(project.name)
             item.setData(Qt.UserRole, project.id)

@@ -23,6 +23,9 @@ class ProjectDetailsScreen(QWidget):
         self.project_name_label = QLabel("Nome do Projeto: ")
         layout.addWidget(self.project_name_label)
 
+        self.client_name_label = QLabel("Cliente: ")
+        layout.addWidget(self.client_name_label)
+
         self.project_status_label = QLabel("Status: ")
         layout.addWidget(self.project_status_label)
 
@@ -58,6 +61,7 @@ class ProjectDetailsScreen(QWidget):
         self.setWindowTitle(self.project.name)
 
         self.project_name_label.setText(f"Nome do Projeto: {self.project.name}")
+        self.client_name_label.setText(f"Cliente: {self.project.client.name}")
         status = "Concluído" if self.project.concluded else "Em Andamento"
         self.project_status_label.setText(f"Status: {status}")
 

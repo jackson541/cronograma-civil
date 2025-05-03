@@ -83,9 +83,10 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.add_template_service_screen)
 
         # Show the first screen
-        self.stack.setCurrentIndex(0)
+        self.show_project_screen()
 
     def show_project_screen(self):
+        self.project_screen.load_clients()
         self.project_screen.load_projects()
         self.stack.setCurrentIndex(0)
 
@@ -97,6 +98,7 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(2)
 
     def show_concluded_projects_screen(self):
+        self.closed_projects_screen.load_clients()
         self.closed_projects_screen.load_projects()
         self.stack.setCurrentIndex(3)
 
