@@ -10,6 +10,8 @@ from project.views.project.delete_project import DeleteProjectScreen
 from project.views.client.new_client import NewClientScreen
 from project.views.client.list_clients import ListClientScreen
 from project.views.client.edit_client import EditClientScreen
+from project.views.client.client_details import ClientDetailsScreen
+from project.views.client.delete_client import DeleteClientScreen
 
 from project.views.service.create_service import CreateServiceScreen
 from project.views.service.service_details import ServiceDetailsScreen
@@ -48,6 +50,8 @@ class MainWindow(QMainWindow):
         self.service_details_screen = ServiceDetailsScreen(self.session, self)
         self.create_task_screen = CreateTaskScreen(self.session, self)
         self.edit_client_screen = EditClientScreen(self.session, self)
+        self.client_details_screen = ClientDetailsScreen(self.session, self)
+        self.delete_client_screen = DeleteClientScreen(self.session, self)
         self.edit_project_screen = EditProjectScreen(self.session, self)
         self.edit_service_screen = EditServiceScreen(self.session, self)
         self.edit_task_screen = EditTaskScreen(self.session, self)
@@ -74,6 +78,8 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.service_details_screen)
         self.stack.addWidget(self.create_task_screen)
         self.stack.addWidget(self.edit_client_screen)
+        self.stack.addWidget(self.client_details_screen)
+        self.stack.addWidget(self.delete_client_screen)
         self.stack.addWidget(self.edit_project_screen)
         self.stack.addWidget(self.edit_service_screen)
         self.stack.addWidget(self.edit_task_screen)
@@ -100,7 +106,15 @@ class MainWindow(QMainWindow):
 
     def show_list_client_screen(self):
         self.list_client_screen.load_clients()
-        self.stack.setCurrentIndex(2)
+        self.stack.setCurrentWidget(self.list_client_screen)
+        
+    def show_client_details_screen(self, client_id):
+        self.client_details_screen.load_client(client_id)
+        self.stack.setCurrentWidget(self.client_details_screen)
+        
+    def show_delete_client_screen(self, client_id):
+        self.delete_client_screen.load_client(client_id)
+        self.stack.setCurrentWidget(self.delete_client_screen)
 
     def show_concluded_projects_screen(self):
         self.closed_projects_screen.load_clients()

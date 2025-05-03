@@ -47,5 +47,5 @@ class ListClientScreen(QWidget):
 
     def view_edit_client(self, item):
         client_id = item.data(Qt.UserRole)
-        self.main_window.show_edit_client_screen(client_id)
+        self.main_window.show_client_details_screen(client_id)
 
